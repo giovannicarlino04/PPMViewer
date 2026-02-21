@@ -7,16 +7,16 @@
 PPM *ppm_make_image(uint32_t width, uint32_t height, Pixel color) {
     PPM *image = malloc(sizeof(PPM));
     if (!image) return NULL;
-
+    
     image->width = width;
     image->height = height;
-
+    
     image->pixels = malloc(sizeof(Pixel*) * height);
     if (!image->pixels) {
         free(image);
         return NULL;
     }
-
+    
     for (uint32_t y = 0; y < height; y++) {
         image->pixels[y] = malloc(sizeof(Pixel) * width);
         if (!image->pixels[y]) {
@@ -29,7 +29,7 @@ PPM *ppm_make_image(uint32_t width, uint32_t height, Pixel color) {
             image->pixels[y][x] = color;
         }
     }
-
+    
     return image;
 }
 
@@ -47,29 +47,30 @@ Pixel ppm_get_pixel(PPM *image, uint32_t x, uint32_t y){
 PPM *ppm_read_image(const char *fileName) {
     FILE *file = fopen(fileName, "rb");
     if (!file) return NULL;
-
+    
     char format[3];
     if (fscanf(file, "%2s", format) != 1) { fclose(file); return NULL; }
-    if (format[0] != 'P' || (format[1] != '3' && format[1] != '6')) { fclose(file); return NULL; }
-
+    if (format[0] != 'P' || (format[1] != '3' 
+                             && format[1] != '6')) { fclose(file); return NULL; }
+    
     int c;
     // Skip comments
     while ((c = fgetc(file)) != EOF) {
         if (c == '#') { while ((c = fgetc(file)) != EOF && c != '\n'); }
         else if (!isspace(c)) { ungetc(c, file); break; }
     }
-
+    
     uint32_t width, height, maxval;
     if (fscanf(file, "%u %u %u", &width, &height, &maxval) != 3) { fclose(file); return NULL; }
     if (maxval != 255) { fclose(file); return NULL; }
-
+    
     // Skip single whitespace/newline after header
     fgetc(file);
-
+    
     Pixel color = {0,0,0};
     PPM *image = ppm_make_image(width, height, color);
     if (!image) { fclose(file); return NULL; }
-
+    
     if (format[1] == '3') {
         // P3 ASCII
         for (uint32_t y=0; y<height; y++){
@@ -97,7 +98,7 @@ PPM *ppm_read_image(const char *fileName) {
             }
         }
     }
-
+    
     fclose(file);
     return image;
 }
@@ -106,12 +107,12 @@ void ppm_write_image(PPM *image, char* fileName, int binary){
     if(!image) return;
     FILE *file = fopen(fileName, binary ? "wb" : "w");
     if(!file) return;
-
+    
     if (binary)
         fprintf(file, "P6\n%u %u\n255\n", image->width, image->height);
     else
         fprintf(file, "P3\n%u %u\n255\n", image->width, image->height);
-
+    
     for (uint32_t y=0; y<image->height; y++){
         for (uint32_t x=0; x<image->width; x++){
             Pixel p = image->pixels[y][x];
@@ -124,7 +125,7 @@ void ppm_write_image(PPM *image, char* fileName, int binary){
         }
         if (!binary) fprintf(file,"\n");
     }
-
+    
     fclose(file);
 }
 
