@@ -1,20 +1,19 @@
 #include <stdio.h>
-#include <stdint.h>
+#include "../../Arena/include/arena.h"
 
 typedef struct{
-    uint32_t r,g,b;
+    u32 r,g,b;
 } Pixel;
 
 typedef struct{
-    uint32_t  width;
-    uint32_t  height;
+    u32  width;
+    u32  height;
     Pixel  **pixels;
-
 } PPM;
 
-PPM *ppm_make_image(uint32_t width, uint32_t height, Pixel color);
-void ppm_set_pixel(PPM *image, uint32_t x, uint32_t y, Pixel p);
-Pixel ppm_get_pixel(PPM *image, uint32_t x, uint32_t y);
+PPM *ppm_make_image(u32 width, u32 height, Pixel color);
+void ppm_set_pixel(PPM *image, u32 x, u32 y, Pixel p);
+Pixel ppm_get_pixel(PPM *image, u32 x, u32 y);
 PPM *ppm_read_image(const char *fileName);
 void ppm_write_image(PPM *image, char* fileName, int binary);
-void ppm_free(PPM *image);
+void ppm_free();
