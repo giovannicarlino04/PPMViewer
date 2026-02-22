@@ -7,7 +7,7 @@
 #include <string.h>
 
 
-static mem_arena *image_arena;
+static arena *image_arena;
 
 
 PPM *ppm_make_image(u32 width, u32 height, Pixel color) {
